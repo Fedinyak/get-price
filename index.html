@@ -9,7 +9,7 @@
     <h1>Upload an excel file to convert into JSON</h1>
     <input type="file" id="file_upload" />
     <button onclick="upload()">Upload</button>
-    
+
     <input class="percentage" type="text" value="30" />
     <br />
     <br />
@@ -64,7 +64,7 @@
             const obj = result["TDSheet"];
             console.log(result);
             // const obj = result[0];
-            
+
             const userPercentage = document.querySelector(".percentage");
             // const percentage = 10;
             const percentage = userPercentage.value;
@@ -87,7 +87,8 @@
                 item["__EMPTY_66"],
                 item["__EMPTY_32"]
               );
-              const sellPrice = discountPrice + (discountPrice / 100) * percentage;
+              const sellPrice =
+                discountPrice + (discountPrice / 100) * percentage;
               return {
                 "№": item["__EMPTY_1"],
                 Артикул: item["__EMPTY_3"],
@@ -114,4 +115,3 @@
     </script>
   </body>
 </html>
-
