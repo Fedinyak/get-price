@@ -1,4 +1,96 @@
 import * as XLSX from 'xlsx/xlsx.mjs';
+import _ from 'lodash';
+import parsePrise from './parse';
+import renderPrice from './render';
+
+const state = {
+  organization: null,
+  organizationId: {
+    ele: '77  34  40955  1',
+    lez: '5410062881',
+    elK: '7714328576',
+    elKUndef: 'undefined_37',
+    elKEmpty: '__EMPTY_38',
+  },
+  code: {
+    ele: '__EMPTY_4',
+    lez: '__EMPTY_3',
+    elKUndef: 'undefined_2',
+    elKEmpty: '__EMPTY_3',
+  },
+  index: {
+    ele: 'Внимание! Оплата данного счета означает согласие с условиями поставки товара. Уведомление об оплате \n обязательно, в противном случае не гарантируется наличие товара на складе. Товар отпускается по факту\n прихода денег на р/с Поставщика, самовывозом, при наличии доверенности и паспорта.',
+    lez: '__EMPTY_1',
+    elKUndef: 'Внимание! Счет действителен в течение 24-х часов! Оплата данного счета означает согласие с условиями поставки товара. Уведомление об оплате обязательно, в противном случае не гарантируется наличие товара на складе. Товар отпускается по факту прихода денег на р/с Поставщика, самовывозом, при наличии доверенности и паспорта. Оплаченный товар хранится на нашем складе в течение 5 рабочих дней.',
+    elKEmpty: 'Внимание! Счет действителен в течение 24-х часов! Оплата данного счета означает согласие с условиями поставки товара. Уведомление об оплате обязательно, в противном случае не гарантируется наличие товара на складе. Товар отпускается по факту прихода денег на р/с Поставщика, самовывозом, при наличии доверенности и паспорта. Оплаченный товар хранится на нашем складе в течение 5 рабочих дней.',
+  },
+  goods: {
+    ele: '__EMPTY',
+    lez: '__EMPTY_6',
+    elKUndef: 'undefined_10',
+    elKEmpty: '__EMPTY_11',
+  },
+  count: {
+    ele: '__EMPTY_7',
+    lez: '__EMPTY_32',
+    elKUndef: 'undefined_42',
+    elKEmpty: '__EMPTY_43',
+  },
+  price: {
+    ele: '__EMPTY_8',
+    elKUndef: 'undefined_46',
+    elKEmpty: '__EMPTY_47',
+  },
+  sum: {
+    ele: '__EMPTY_9',
+    lez: '__EMPTY_66',
+    elKUndef: 'undefined_52',
+    elKEmpty: '__EMPTY_53',
+  },
+  data: {
+    ele: 'Лист1',
+    elKUndef: 'TDSheet',
+    elKEmpty: 'TDSheet',
+  },
+};
+
+const getOrganization = (data) => {
+  // "Лист1" "ЭЛЕКТРА"        --- '77  34  40955  1'
+  // "TDSheet" "Лезард"       --- '5410062881'
+  // "TDSheet:"               --- '7714328576'
+  // Распарсенная экселька
+  // Выбрать какой поставщик
+  // Просчитать
+  // Вывести
+  const resultValue = [];
+  const values = Object.values(data);
+  values.map((obj) => obj.map((item) => resultValue.push(Object.values(item))));
+  const flatVaues = _.flattenDeep(resultValue);
+  if (_.includes(flatVaues, state.organizationId.ele)) {
+    state.organization = 'ele';
+    return;
+  }
+  if (_.includes(flatVaues, state.organizationId.lez)) {
+    state.organization = 'lez';
+    return;
+  }
+  if (_.includes(flatVaues, state.organizationId.elK)) {
+    const keyValues = Object.values(data);
+    const keyResult = {};
+    keyValues.map((obj) => obj.map((item) => _.merge(keyResult, item)));
+    if (_.has(keyResult, state.organizationId.elKUndef)) {
+      state.organization = 'elKUndef';
+      return;
+    }
+    if (_.has(keyResult, state.organizationId.elKEmpty)) {
+      state.organization = 'elKEmpty';
+      return;
+    }
+    state.organization = 'elK';
+    return;
+  }
+  state.organization = 'notSupport';
+};
 
 const runApp = () => {
   // Method to read excel file and convert it into JSON
@@ -21,61 +113,25 @@ const runApp = () => {
           }
         });
 
-        // "Лист1" "ЭЛЕКТРА"
-        // "TDSheet" "Лезард"
-
         // displaying the json result
-        const getResult = (data) => {
-          if (data.TDSheet !== undefined) {
-            const obj = data.TDSheet;
-            console.log(data);
+        const getPrice = (data) => {
+          getOrganization(data);
+          console.log(state);
+          const userPercentage = document.querySelector('.percentage');
+          const percentage = userPercentage.value;
 
-            const userPercentage = document.querySelector('.percentage');
-            const percentage = userPercentage.value;
-
-            const getDiscountPrice = (sum, count) => {
-              let result = 0;
-              if (sum !== undefined) {
-                const strWithoutSpace = sum.replace(/ /g, '');
-                const strWithDot = strWithoutSpace.replace(',', '.');
-                const finalNum = parseFloat(strWithDot);
-                result += finalNum;
-              }
-              return result / parseFloat(count);
-            };
-
-            const filtedItem = obj.filter((item) => !isNaN(item.__EMPTY_1));
-
-            const finalResult = filtedItem.map((item) => {
-              const discountPrice = getDiscountPrice(
-                item.__EMPTY_66,
-                item.__EMPTY_32,
-              );
-              const sellPrice = discountPrice + (discountPrice / 100) * percentage;
-              return {
-                '№': item.__EMPTY_1,
-                Артикул: item.__EMPTY_3,
-                'Товары (работы, услуги)': item.__EMPTY_6,
-                Количество: item.__EMPTY_32,
-                Цена: item.__EMPTY_42,
-                'Сумма\nбез скидки': item.__EMPTY_50,
-                Скидка: item.__EMPTY_58,
-                Сумма: item.__EMPTY_66,
-                'Цена со скидкой, шт': discountPrice.toFixed(2),
-                'Цена с наценкой, шт': sellPrice.toFixed(2),
-              };
-            });
-            return finalResult;
-          } if (data['Лист1'] !== undefined) {
-            return data;
-          }
+          return parsePrise(state, percentage, data);
+          // return data;
         };
 
-        const resultEle = document.getElementById('json-result');
-        resultEle.value = JSON.stringify(getResult(result), null, 4);
+        // const resultEle = document.getElementById('json-result');
+        // resultEle.value = JSON.stringify(getPrice(result), null, 4);
+
         // resultEle.value = JSON.stringify(result, null, 4);
 
-        resultEle.style.display = 'block';
+        // resultEle.style.display = 'block';
+
+        renderPrice(getPrice(result));
       };
     } catch (e) {
       console.error(e);

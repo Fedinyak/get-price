@@ -4,25 +4,84 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- <base href="/" /> -->
+    <!-- <link rel="stylesheet" type="text/css" href="src/styles/style.css" /> -->
+    <!-- <link rel="stylesheet" type="text/css" href="src/styles/normalize.css" /> -->
     <title>Вычислить цену</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=PT+Mono&display=swap"
+      rel="stylesheet"
+    />
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.min.js"></script> -->
   </head>
   <body>
-    <h1>Upload an excel file to convert into JSON</h1>
-    <form class="price-form">
-      <input type="file" id="file_upload" />
-      <!-- <button onclick="upload()">Upload</button> -->
-      <button class="btn-submit">Рассчитать</button>
-    </form>
-
-    <input class="percentage" type="text" value="30" />
-    <br />
-    <br />
-    <!-- container to display the json result -->
-    <textarea
-      id="json-result"
-      style="display: none; height: 500px; width: 1000px"
-    ></textarea>
+    <section class="container">
+      <h1>Вычисление прайса</h1>
+      <form class="price-form">
+        <input type="file" id="file_upload" class="upload-button"/>
+        <!-- <button onclick="upload()">Upload</button> -->
+        <div class="percentage-container">
+          <p class="percentage-text">Наценка, %</p>
+          <input class="percentage" type="text" value="30" />
+        </div>
+        <button class="btn-submit">Рассчитать</button>
+      </form>
+      </div>
+      
+      <!-- container to display the json result -->
+      <textarea
+        id="json-result"
+        style="display: none; height: 500px; width: 1000px"
+      ></textarea>
+    </section>
+    <div class="container">
+<div class="table-head__container">
+      <div class="table-head">
+        <p class="table-head__index index-width"></p>
+        <p class="table-head__code code-width">Артикул</p>
+        <p class="table-head__goods goods-width">Товары</p>
+        <p class="table-head__count count-width">Кол-во</p>
+        <p class="table-head__price price-width">Цена</p>
+        <p class="table-head__sum sum-width">Сумма</p>
+        <p class="table-head__sell-price sell-price-width">Цена с наценкой</p>
+      </div>
+    </div>
+    </div>
+    
+    <section class="container">
+      <div class="table__container">
+        <!-- <ul class="list table-list">
+          <li class="table-item">
+            <p class="table-item__index index-width">1</p>
+            <p class="table-item__code code-width">79444</p>
+            <p class="table-item__goods goods-width">
+              Наконечник НШВИ 2,5-12 (КВТ) синий
+            </p>
+            <p class="table-item__count count-width">300</p>
+            <p class="table-item__price price-width">1.13</p>
+            <p class="table-item__sum sum-width">339</p>
+            <p class="table-item__sell-price sell-price-width">1.47</p>
+          </li>
+          <li class="table-item">
+            <p class="table-item__index index-width">2</p>
+            <p class="table-item__code code-width">2CDS241001R0254</p>
+            <p class="table-item__goods goods-width">
+              Aвтоматич. выкл-ль 1-пол.SH201L C25
+            </p>
+            <p class="table-item__count count-width">20</p>
+            <p class="table-item__price price-width">365.08</p>
+            <p class="table-item__sum sum-width">7301.6</p>
+            <p class="table-item__sell-price sell-price-width">474.60</p>
+          </li>
+        </ul> -->
+      </div>
+    </section>
 
     <script>
       // // Method to upload a valid excel file
